@@ -1,11 +1,20 @@
-import { NextResponse } from "next/server"
 import database from "@/app/config/mongo.database"
 import { findCurrentWorkdayByUserId } from "@/app/models/repositories/workday.repo"
+import ResponseHandler from "@/app/utils/responseHandler"
 
-export async function GET(res, context) {
-    await database()
+export async function GET(_, context) {
+    // get user id
     const { id } = context.params
-    const workday = await findCurrentWorkdayByUserId(id)
+    try {
+        // call database
+        await database()
 
-    return NextResponse.json(workday, { status: 404 })
+        // find current workday
+        const workday = await findCurrentWorkdayByUserId(id)
+        if (!workday) return ResponseHandler.NotFound("Workday not found")
+
+        return ResponseHandler.Success(workday)
+    } catch (error) {
+        return ResponseHandler.ServerError()
+    }
 }

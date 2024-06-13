@@ -1,15 +1,28 @@
+"use client"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+
 export default function Home() {
+    const router = useRouter()
+
     return (
-        <main>
-            <div>Xin chào bạn ABC</div>
-            <div className="flex">
-                <div>
-                    <button>Check In</button>
+        <main className="container">
+            <div className="flex gap-10">
+                <div className="">
+                    <Link href="/login">Đăng nhập</Link>
                 </div>
-                <div>
-                    <button>Check Out</button>
+                <div className="">
+                    <Link href="/register">Đăng ký</Link>
                 </div>
             </div>
+            <button
+                onClick={() => {
+                    router.push("/dashboard")
+                    router.refresh()
+                }}
+            >
+                Dashboard
+            </button>
         </main>
     )
 }

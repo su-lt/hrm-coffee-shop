@@ -5,7 +5,7 @@ import { findUserById } from "@/app/models/repositories/user.repo"
 import { verifySessionKey } from "@/app/utils//auth"
 import ResponseHandler from "@/app/utils/responseHandler"
 
-export async function GET() {
+export async function POST() {
     // get authorization in headers
     const authorization = headers().get("authorization")
     const id = headers().get("id")
@@ -38,6 +38,7 @@ export async function GET() {
 
         return ResponseHandler.Success({
             userId: foundUser._id,
+            username: foundUser.fullname,
             role: foundUser.role,
         })
     } catch (error) {

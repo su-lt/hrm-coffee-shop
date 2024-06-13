@@ -4,8 +4,8 @@ import {
     findShop,
     getAllBranches,
 } from "@/app/models/repositories/shop.repo"
-import { branchSchema } from "@/app/utils/validate"
-import ResponseHandle from "@/app/utils/responseHandle"
+import { branchSchema } from "@/app/helper/type.schema"
+import ResponseHandler from "@/app/utils/responseHandler"
 
 export async function POST(res) {
     // get body parameters request
@@ -15,7 +15,7 @@ export async function POST(res) {
     const isValidation = branchSchema.safeParse(bodyParams)
 
     if (!isValidation.success)
-        return ResponseHandle.BadRequest(isValidation.error.errors)
+        return ResponseHandler.BadRequest(isValidation.error.errors)
 
     // call database
     await database()
@@ -28,15 +28,22 @@ export async function POST(res) {
         ...bodyParams,
         shopId: foundShop._id,
     })
-    if (!newBranch) return ResponseHandle.Forbidden("Create failed !")
+    if (!newBranch) return ResponseHandler.Forbidden("Create failed !")
 
-    return ResponseHandle.Success(newBranch)
+    return ResponseHandler.Success(newBranch)
 }
 
 export async function GET() {
-    await database()
-    const branches = await getAllBranches()
-    if (!branches) return ResponseHandle.Forbidden("No branches found")
+    try {
+        // call database
+        await database()
 
-    return ResponseHandle.Success(branches)
+        // get branches
+        const branches = await getAllBranches()
+        if (!branches) return ResponseHandler.NotFound("No branches found")
+
+        return ResponseHandler.Success(branches)
+    } catch (error) {
+        return ResponseHandler.ServerError()
+    }
 }

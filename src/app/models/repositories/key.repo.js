@@ -26,4 +26,8 @@ const createKey = async ({ userId, privateKey }) => {
     )
 }
 
-module.exports = { findKeyByUserId, createKey }
+const removeKeyByUserId = async (userId) => {
+    return await keyModel.deleteOne({ userId })
+}
+
+module.exports = { findKeyByUserId, createKey, removeKeyByUserId }

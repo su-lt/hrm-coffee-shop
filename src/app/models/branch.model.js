@@ -12,6 +12,7 @@ const branchSchema = new Schema(
             longitude: { type: Number, required: true },
         },
         maxDistance: { type: Number, default: 50 },
+        isDeleted: { type: Date, default: null },
     },
     {
         timestamps: true,

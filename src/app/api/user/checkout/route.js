@@ -1,11 +1,14 @@
 import database from "@/app/config/mongo.database"
 import { getDistance } from "geolib"
-import { findUserById } from "@/app/models/repositories/user.repo"
+import { cookies } from "next/headers"
+import { findUserWithPopulateById } from "@/app/models/repositories/user.repo"
 import { findCurrentWorkdayByUserId } from "@/app/models/repositories/workday.repo"
-import { checkInSchema } from "@/app/utils/validate"
+import { checkInSchema } from "@/app/helper/type.schema"
 import ResponseHandler from "@/app/utils/responseHandler"
 
 export async function POST(res) {
+    // get user in cookies
+    const userId = cookies().get("i")
     // get body parameters request
     const bodyParams = await res.json()
 
@@ -20,7 +23,7 @@ export async function POST(res) {
         await database()
 
         // check user exists
-        const foundUser = await findUserById(bodyParams.userId)
+        const foundUser = await findUserWithPopulateById(userId.value)
         if (!foundUser) return ResponseHandler.NotFound("User not exists !")
 
         // get distance between user and branch location
@@ -33,7 +36,7 @@ export async function POST(res) {
             return ResponseHandler.Forbidden("you are too far company !")
 
         // check in record
-        const workday = await findCurrentWorkdayByUserId(bodyParams.userId)
+        const workday = await findCurrentWorkdayByUserId(userId.value)
         if (!workday) return ResponseHandler.Forbidden("Check out failed !")
 
         // check out only once time
